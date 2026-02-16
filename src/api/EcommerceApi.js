@@ -1,5 +1,9 @@
 const ECOMMERCE_API_URL = "https://api-ecommerce.hostinger.com";
-const ECOMMERCE_STORE_ID = "store_01K4W00XD897YKNJ9TQXEGQQYX";
+const ECOMMERCE_STORE_ID = import.meta.env.VITE_HOSTINGER_STORE_ID;
+
+if (!ECOMMERCE_STORE_ID) {
+  throw new Error('Missing Hostinger configuration. Please set VITE_HOSTINGER_STORE_ID environment variable.');
+}
 
 export const formatCurrency = (priceInCents, currencyInfo) => {
 	if (!currencyInfo || priceInCents === null || priceInCents === undefined) {
