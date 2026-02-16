@@ -1,5 +1,13 @@
 # Railway Deployment Guide
 
+## How It Works
+
+1. **Build Step**: `npm run build` creates optimized production files in `dist/`
+2. **Server**: `npm start` runs `server.js` - a Node.js Express server that:
+   - Serves static files from `dist/`
+   - Handles SPA routing (all routes → index.html)
+   - Listens on Railway's `$PORT` (8079)
+
 ## Environment Variables Required
 
 Set these in Railway's **Variables** section:
@@ -19,14 +27,35 @@ NODE_ENV=production
 3. **Go to Variables tab** and paste the environment variables above
 4. **Click Deploy** - Railway will auto-build and start
 
-## Troubleshooting 502 Errors
+## Troubleshooting
 
-- ✅ Environment variables set? (check Variables tab)
-- ✅ Build succeeded? (check Deployments tab)
-- ✅ Logs show no errors? (check Logs tab)
-- ✅ Port configured? (should be auto via `$PORT` env var)
+### Still 502 errors?
+1. Check Railway **Deployments** → **Logs** for actual error message
+2. Verify all VITE_* variables are set in Railway Variables tab
+3. Check build succeeded (look for "✅ Built successfully" in logs)
 
-If still getting 502:
-1. Check **Logs** for actual error
-2. Clear cache and redeploy
-3. Ensure Node version is 18+
+### Logs say "dist folder not found"?
+- Build failed. Check "Build Logs" in Railway Deployments tab
+
+### App loads but broken styling/routes?
+- Make sure `npm run build` created the dist folder
+- Check that all VITE_* variables are set (they're needed at build time)
+
+## Local Testing
+
+```bash
+# Build for testing
+npm run build
+
+# Test server locally (on port 8079)
+npm start
+
+# Then visit http://localhost:8079
+```
+
+## Files
+
+- `server.js` - Production Node.js/Express server
+- `railway.json` - Railway platform config
+- `.env.local` - Your local credentials (not committed)
+

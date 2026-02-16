@@ -7,7 +7,7 @@
     "dev": "vite --host :: --port 3000",
     "build": "node tools/generate-llms.js || true && vite build",
     "preview": "vite preview --host 0.0.0.0 --port ${PORT:-8079}",
-    "start": "vite preview --host 0.0.0.0 --port ${PORT:-8079}",
+    "start": "node server.js",
     "lint": "eslint . --quiet"
   },
   "dependencies": {
@@ -33,6 +33,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "date-fns": "^3.6.0",
+    "express": "^4.18.2",
     "file-saver": "^2.0.5",
     "framer-motion": "^10.16.4",
     "jszip": "^3.10.1",
