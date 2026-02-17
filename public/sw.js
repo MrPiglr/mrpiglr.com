@@ -21,6 +21,24 @@
     });
     
     self.addEventListener('fetch', (event) => {
+      const url = new URL(event.request.url);
+      
+      // Don't cache source files, HMR, or WebSocket connections
+      const skipCaching = url.pathname.startsWith('/src/') || 
+                         url.pathname.endsWith('.jsx') ||
+                         url.pathname.endsWith('.js') ||
+                         event.request.url.includes('@vite');
+      
+      if (skipCaching) {
+        // For dev files, always fetch fresh
+        event.respondWith(
+          fetch(event.request).catch(() => {
+            return new Response('Network error', { status: 503 });
+          })
+        );
+        return;
+      }
+      
       event.respondWith(
         caches.match(event.request)
           .then((response) => {
@@ -45,7 +63,10 @@
     
                 return response;
               }
-            );
+            ).catch(() => {
+              // Network error - return cached version if available
+              return caches.match(event.request);
+            });
           })
       );
     });

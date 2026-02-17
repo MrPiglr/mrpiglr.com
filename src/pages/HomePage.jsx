@@ -43,8 +43,8 @@ const HomePage = () => {
   return (
     <>
       <Helmet>
-        <title>MrPiglr - Creative Technologist & Developer</title>
-        <meta name="description" content="Official website of MrPiglr, a creative technologist specializing in web development, game development, and open source contributions." />
+        <title>MrPiglr - Computer Cowboy & Architect</title>
+        <meta name="description" content="MRPIGLR SYSTEM :: Architect. Creator. Visionary. Building AeThex and digital experiences at the intersection of creativity and code." />
         
         <script type="application/ld+json">
           {JSON.stringify(generateOrganizationSchema("https://www.mrpiglr.com"))}
@@ -69,42 +69,45 @@ const HomePage = () => {
 
             {/* Featured Sections - Added min-h-[300px] to reserve space */}
             <section className="container mx-auto px-4 min-h-[300px]"> 
-              <h2 className="sr-only">Featured Services and Creations</h2>
+              <h2 className="sr-only">Navigate the System</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <FeatureCard 
-                  icon={<Terminal className="w-8 h-8 mb-4 text-primary" />}
-                  title="Digital Experiences"
-                  description="Immersive web applications and virtual environments built with cutting-edge tech."
+                  icon="🏗️"
+                  title="ARCHITECT"
+                  description="Scalable infrastructure & digital foundations. Building systems that work."
                   link="/portfolio"
+                  color="green"
                 />
                 <FeatureCard 
-                  icon={<Cpu className="w-8 h-8 mb-4 text-primary" />}
-                  title="Game Development"
-                  description="Exploring new worlds through interactive storytelling and game mechanics."
-                  link="/creations"
+                  icon="🎨"
+                  title="CREATOR"
+                  description="Audio-visual experiences. Retro aesthetics meet modern design."
+                  link="/music"
+                  color="purple"
                 />
                 <FeatureCard 
-                  icon={<Code2 className="w-8 h-8 mb-4 text-primary" />}
-                  title="Open Source"
-                  description="Contributing to the developer community with tools, libraries, and resources."
-                  link="/dev-exchange"
+                  icon="🌐"
+                  title="VISIONARY"
+                  description="AeThex ecosystem. Identity layer for the decentralized web."
+                  link="/about"
+                  color="blue"
                 />
               </div>
             </section>
 
             {/* About/Bio Teaser - Fixed min-height to prevent collapse */}
             <section className="container mx-auto px-4">
-              <div className="relative overflow-hidden rounded-2xl border bg-card p-8 md:p-12 min-h-[300px] flex flex-col justify-center">
+              <div className="relative overflow-hidden rounded-2xl border bg-card p-8 md:p-12 min-h-[300px] flex flex-col justify-center transition-all duration-300 hover:glow-purple-lg">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent pointer-events-none" />
                 <div className="relative z-10 max-w-2xl">
-                  <h2 className="text-3xl font-bold tracking-tighter mb-4">Building the Future, One Bit at a Time</h2>
-                  <p className="text-muted-foreground text-lg mb-6">
-                    I'm a full-stack developer and digital artist obsessed with the intersection of creativity and code. 
-                    From React applications to game engines, I build things that live on the internet.
+                  <h2 className="text-3xl font-bold tracking-tighter mb-4 text-purple-300">SYSTEM INITIALIZED</h2>
+                  <p className="text-muted-foreground text-lg mb-6 font-mono">
+                    {'>'} Computer cowboy. Architect. Creator. I build digital infrastructure that pushes boundaries—from web applications to game engines to the AeThex ecosystem. <br/><br/>
+                    {'>'} The intersection of creativity & code is where I live.
                   </p>
-                  <Button asChild size="lg" className="group">
+                  <Button asChild size="lg" className="group bg-purple-600 hover:bg-purple-700">
                     <Link to="/about">
-                      Read Full Bio 
+                      [ACCESS FULL BIO] 
                       <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
                     </Link>
                   </Button>
@@ -120,7 +123,7 @@ const HomePage = () => {
 
 // Sub-component to keep main file clean
 const FeatureCard = ({ icon, title, description, link }) => (
-  <Card className="group hover:border-primary/50 transition-colors duration-300">
+  <Card className="group hover:border-primary/50 transition-all duration-300 hover:glow-purple-lg">
     <CardContent className="p-6">
       {icon}
       <h3 className="text-xl font-bold mb-2">{title}</h3>

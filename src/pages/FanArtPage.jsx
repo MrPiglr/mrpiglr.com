@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { supabase } from '@/lib/customSupabaseClient';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -37,11 +38,35 @@ const FanArtCard = ({ art, index }) => (
 const FanArtPage = () => {
   const { toast } = useToast();
   const { user } = useAuth();
+  const { theme } = useTheme();
   const [isSubmitOpen, setSubmitOpen] = useState(false);
   const [allArt, setAllArt] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const baseUrl = "https://www.mrpiglr.com";
+  const getHeaderColor = () => {
+    if (theme === 'cyberpunk') return 'text-[#00FFD7]';
+    if (theme === 'matrix') return 'text-[#39FF14]';
+    return 'text-cyan-300';
+  };
+
+  const getStatCardClass = (colorName) => {
+    if (theme === 'cyberpunk') {
+      const colorMap = {
+        cyan: 'from-[#00FFD7]/10 border-[#00FFD7]/30 hover:border-[#00FFD7]/50',
+        magenta: 'from-[#FF006E]/10 border-[#FF006E]/30 hover:border-[#FF006E]/50'
+      };
+      return colorMap[colorName] || colorMap.cyan;
+    } else if (theme === 'matrix') {
+      return 'from-[#00FF00]/10 border-[#00FF00]/30 hover:border-[#00FF00]/50';
+    }
+    const colorMap = {
+      cyan: 'from-cyan-500/10 border-cyan-500/30 hover:border-cyan-500/50',
+      magenta: 'from-pink-500/10 border-pink-500/30 hover:border-pink-500/50'
+    };
+    return colorMap[colorName] || colorMap.cyan;
+  };
+
+  const baseUrl = import.meta.env.VITE_APP_URL || "https://www.mrpiglr.com";
   const pageUrl = `${baseUrl}/fan-art`;
   const pageImage = `${baseUrl}/og-fanart.jpg`; // Generic image for fan art page
   const pageDescription = "A gallery showcasing incredible fan art from the MrPiglr community. See amazing creations inspired by MrPiglr's work.";
@@ -92,29 +117,70 @@ const FanArtPage = () => {
         <meta name="twitter:image" content={pageImage} />
       </Helmet>
       <div className="container mx-auto px-4 py-12">
-        <header className="text-center mb-12 relative">
-          <motion.h1 
-            initial={{ opacity: 0, y: -20 }}
+        {/* Terminal Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-12"
+        >
+          <h1 className={`text-5xl md:text-6xl font-bold ${getHeaderColor()} font-mono mb-2`}>
+            SYSTEM.GALLERY()
+          </h1>
+          <p className="text-xl text-muted-foreground font-mono">
+            {'>'} Community artwork. Creativity. Inspiration.
+          </p>
+        </motion.div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-4xl md:text-6xl font-bold text-glow mb-4"
+            transition={{ duration: 0.5, delay: 0.1 }}
           >
-            Fan Art Gallery
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            <Card className={`bg-gradient-to-br to-transparent ${getStatCardClass('cyan')} transition-all`}>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground font-mono">Total Artworks</p>
+                    <p className={`text-3xl font-bold ${getHeaderColor()}`}>{allArt.length}</p>
+                  </div>
+                  <ImageIcon className="text-cyan-500/50 w-12 h-12" />
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto"
           >
-            A tribute to the creativity of the community. Explore amazing artwork inspired by the world of MrPiglr.
-          </motion.p>
+            <Card className={`bg-gradient-to-br to-transparent ${getStatCardClass('magenta')} transition-all`}>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground font-mono">Featured</p>
+                    <p className={`text-3xl font-bold ${getHeaderColor()}`}>{featuredArt ? '1' : '0'}</p>
+                  </div>
+                  <Star className="text-purple-500/50 w-12 h-12" />
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+
+        {/* Action Bar */}
+        <div className="flex justify-between items-center mb-8">
+          <div className="text-sm text-muted-foreground font-mono">
+            [{allArt.length > 0 ? 'LOADED' : 'EMPTY'}]
+          </div>
           {user && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="mt-8"
             >
               <Dialog open={isSubmitOpen} onOpenChange={setSubmitOpen}>
                 <DialogTrigger asChild>
@@ -133,7 +199,7 @@ const FanArtPage = () => {
               </Dialog>
             </motion.div>
           )}
-        </header>
+        </div>
         
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
@@ -148,8 +214,8 @@ const FanArtPage = () => {
                 transition={{ duration: 0.7, ease: "easeOut" }}
                 className="mb-16"
               >
-                <h2 className="text-3xl font-bold text-center mb-8 flex items-center justify-center gap-3 text-glow"><Star className="text-primary"/> Featured Artwork</h2>
-                <Card className="grid md:grid-cols-2 overflow-hidden border-2 border-primary shadow-[0_0_30px_hsl(var(--primary)/0.5)]">
+                <h2 className="text-2xl font-mono font-bold mb-6 text-cyan-300">{'›'} Featured Artwork</h2>
+                <Card className="grid md:grid-cols-2 overflow-hidden border-2 border-cyan-500/50 shadow-[0_0_30px_rgba(34,211,238,0.2)]">
                    <div className="p-8 flex flex-col justify-center">
                       <h3 className="text-3xl font-bold mb-2">{featuredArt.title}</h3>
                       <p className="text-muted-foreground text-lg mb-4">by {featuredArt.username || 'Anonymous'}</p>
@@ -163,10 +229,13 @@ const FanArtPage = () => {
             )}
 
             {regularArt && regularArt.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {regularArt.map((art, index) => (
-                  <FanArtCard key={art.id} art={art} index={index} />
-                ))}
+              <div>
+                <h2 className="text-2xl font-mono font-bold mb-6 text-cyan-300">{'›'} Gallery</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {regularArt.map((art, index) => (
+                    <FanArtCard key={art.id} art={art} index={index} />
+                  ))}
+                </div>
               </div>
             ) : !featuredArt && (
               <div className="text-center py-16">

@@ -9,16 +9,72 @@ import { Label } from '@/components/ui/label';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import GridBackground from '@/components/GridBackground';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const { theme } = useTheme();
   
   const { signInWithEmail } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/dashboard';
+
+  const getOrbColor1 = () => {
+    if (theme === 'cyberpunk') return 'bg-[#FF006E]/20';
+    if (theme === 'matrix') return 'bg-[#00FF00]/20';
+    return 'bg-purple-900/20';
+  };
+
+  const getOrbColor2 = () => {
+    if (theme === 'cyberpunk') return 'bg-[#00FFD7]/20';
+    if (theme === 'matrix') return 'bg-[#39FF14]/20';
+    return 'bg-purple-600/20';
+  };
+
+  const getIconColor = () => {
+    if (theme === 'cyberpunk') return 'text-[#FF006E]';
+    if (theme === 'matrix') return 'text-[#00FF00]';
+    return 'text-purple-500';
+  };
+
+  const getIconBorderClass = () => {
+    if (theme === 'cyberpunk') return 'bg-black border border-[#FF006E]/50 shadow-[0_0_30px_rgba(255,0,110,0.4)]';
+    if (theme === 'matrix') return 'bg-black border border-[#00FF00]/50 shadow-[0_0_30px_rgba(0,255,0,0.4)]';
+    return 'bg-black border border-purple-500/50 shadow-[0_0_30px_rgba(168,85,247,0.4)]';
+  };
+
+  const getIconGlowClass = () => {
+    if (theme === 'cyberpunk') return 'border border-[#FF006E] animate-ping opacity-20';
+    if (theme === 'matrix') return 'border border-[#00FF00] animate-ping opacity-20';
+    return 'border border-purple-500 animate-ping opacity-20';
+  };
+
+  const getForgotPasswordColor = () => {
+    if (theme === 'cyberpunk') return 'text-[#FF006E] hover:text-[#FF0080]';
+    if (theme === 'matrix') return 'text-[#00FF00] hover:text-[#39FF14]';
+    return 'text-purple-400 hover:text-purple-300';
+  };
+
+  const getInputFocusClass = () => {
+    if (theme === 'cyberpunk') return 'focus:border-[#FF006E] focus:ring-[#FF006E]/20';
+    if (theme === 'matrix') return 'focus:border-[#00FF00] focus:ring-[#00FF00]/20';
+    return 'focus:border-purple-500 focus:ring-purple-500/20';
+  };
+
+  const getSubmitButtonClass = () => {
+    if (theme === 'cyberpunk') return 'bg-[#FF006E] hover:bg-[#FF0080] shadow-lg shadow-[#FF006E]/20';
+    if (theme === 'matrix') return 'bg-[#00FF00] hover:bg-[#39FF14] text-[#001a00] shadow-lg shadow-[#00FF00]/20';
+    return 'bg-purple-600 hover:bg-purple-700 shadow-lg shadow-purple-900/20';
+  };
+
+  const getSignupButtonClass = () => {
+    if (theme === 'cyberpunk') return 'border-[#FF006E]/20 text-[#FF006E] hover:bg-[#FF006E]/10 hover:border-[#FF006E]/50 hover:text-[#FF0080]';
+    if (theme === 'matrix') return 'border-[#00FF00]/20 text-[#00FF00] hover:bg-[#00FF00]/10 hover:border-[#00FF00]/50 hover:text-[#39FF14]';
+    return 'border-purple-500/20 text-purple-400 hover:bg-purple-500/10 hover:border-purple-500/50 hover:text-purple-300';
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -47,8 +103,8 @@ const LoginPage = () => {
       <GridBackground />
       
       {/* Decorative gradient orbs */}
-      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-900/20 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-purple-600/20 rounded-full blur-[100px] pointer-events-none" />
+      <div className={`absolute top-1/4 left-1/4 w-64 h-64 ${getOrbColor1()} rounded-full blur-[100px] pointer-events-none`} />
+      <div className={`absolute bottom-1/4 right-1/4 w-64 h-64 ${getOrbColor2()} rounded-full blur-[100px] pointer-events-none`} />
 
       {/* Main Card */}
       <motion.div 
@@ -63,10 +119,10 @@ const LoginPage = () => {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-            className="p-4 rounded-full bg-black border border-purple-500/50 shadow-[0_0_30px_rgba(168,85,247,0.4)] relative"
+            className={`p-4 rounded-full ${getIconBorderClass()} relative`}
           >
-            <div className="absolute inset-0 rounded-full border border-purple-500 animate-ping opacity-20"></div>
-            <ShieldCheck className="w-8 h-8 text-purple-500" />
+            <div className={`absolute inset-0 rounded-full ${getIconGlowClass()}`}></div>
+            <ShieldCheck className={`w-8 h-8 ${getIconColor()}`} />
           </motion.div>
         </div>
         
@@ -88,7 +144,7 @@ const LoginPage = () => {
                 id="email"
                 type="email"
                 placeholder="you@example.com"
-                className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-purple-500 focus:ring-purple-500/20"
+                className={`pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-500 ${getInputFocusClass()}`}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -99,7 +155,7 @@ const LoginPage = () => {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
-              <Link to="/forgot-password" className="text-xs text-purple-400 hover:text-purple-300 transition-colors">
+              <Link to="/forgot-password" className={`text-xs ${getForgotPasswordColor()} transition-colors`}>
                 Forgot password?
               </Link>
             </div>
@@ -109,7 +165,7 @@ const LoginPage = () => {
                 id="password"
                 type="password"
                 placeholder="••••••••"
-                className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-purple-500 focus:ring-purple-500/20"
+                className={`pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-500 ${getInputFocusClass()}`}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -120,7 +176,7 @@ const LoginPage = () => {
           <Button 
             type="submit" 
             disabled={loading}
-            className="w-full h-11 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg shadow-lg shadow-purple-900/20 transition-all duration-200 mt-6"
+            className={`w-full h-11 ${getSubmitButtonClass()} text-white font-semibold rounded-lg transition-all duration-200 mt-6`}
           >
             {loading ? (
               <Loader2 className="w-5 h-5 animate-spin mr-2" />
@@ -134,17 +190,7 @@ const LoginPage = () => {
 
         <div className="mt-8 pt-6 border-t border-white/10 text-center">
             <p className="text-sm text-gray-400 mb-4">Don't have an account?</p>
-            <Button asChild variant="outline" className="w-full border-purple-500/20 text-purple-400 hover:bg-purple-500/10 hover:border-purple-500/50 hover:text-purple-300 transition-all">
-              <Link to="/signup">Create Account</Link>
-            </Button>
-        </div>
-
-        <div className="mt-6 text-center">
-          <Link to="/" className="text-xs font-medium text-gray-500 hover:text-purple-400 transition-colors">
-            Return to Homepage
-          </Link>
-        </div>
-      </motion.div>
+            <Button asChild variant="outline" className={`w-full ${getSignupButtonClass()} transition-all`}>
     </div>
   );
 };

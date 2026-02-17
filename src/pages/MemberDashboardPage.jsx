@@ -8,12 +8,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { User, Award, Settings, LogOut, Check, Save, Github, Twitter, Linkedin, Loader2, Edit2, KeyRound, Lock, LayoutDashboard } from 'lucide-react';
+import { User, Award, Settings, LogOut, Check, Save, Github, Twitter, Linkedin, Loader2, Edit2, KeyRound, Lock, LayoutDashboard, ArrowLeft, Shield } from 'lucide-react';
 import AnimatedPage from '@/components/AnimatedPage';
 import { useToast } from '@/components/ui/use-toast';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Progress } from '@/components/ui/progress';
+import RoleManagerDashboard from '@/components/RoleManagerDashboard';
 
 const calculateLevel = (xp) => {
   return Math.floor(0.1 * Math.sqrt(xp));
@@ -314,6 +315,8 @@ const MemberDashboardPage = () => {
         return <UserProfile />;
       case 'badges':
         return <UserBadges />;
+      case 'role':
+        return <RoleManagerDashboard userId={user?.id} currentRole={profile?.role} onRoleChange={() => {}} />;
       case 'settings':
         return <AccountSettings />;
       default:
@@ -354,6 +357,10 @@ const MemberDashboardPage = () => {
               <p className="text-muted-foreground">{user?.email}</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-2">
+              <Button variant="ghost" size="sm" onClick={() => navigate('/')} className="gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                Back to Home
+              </Button>
               {isAdmin && (
                 <Button variant="outline" onClick={() => navigate('/admin')}>
                   <LayoutDashboard className="mr-2 h-4 w-4" />
@@ -385,6 +392,14 @@ const MemberDashboardPage = () => {
                 >
                   <Award className="h-4 w-4" />
                   Badges
+                </Button>
+                <Button
+                  variant={activeTab === 'role' ? 'secondary' : 'ghost'}
+                  className={`flex-1 gap-2 ${activeTab === 'role' ? '' : 'text-muted-foreground'}`}
+                  onClick={() => setActiveTab('role')}
+                >
+                  <Shield className="h-4 w-4" />
+                  Role
                 </Button>
                 <Button
                   variant={activeTab === 'settings' ? 'secondary' : 'ghost'}

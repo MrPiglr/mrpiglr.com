@@ -36,7 +36,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
       const [selected, setSelected] = useState(null);
       const listRefs = useRef({});
 
-      const baseUrl = "https://www.mrpiglr.com";
+      const baseUrl = import.meta.env.VITE_APP_URL || "https://www.mrpiglr.com";
       const pageUrl = `${baseUrl}/inspirations`;
       const pageImage = `${baseUrl}/og-inspirations.jpg`; // Generic image for inspirations page
       const pageDescription = "Explore an interactive map of places and ideas that have inspired MrPiglr's creative journey in game development, music, and more.";

@@ -50,7 +50,7 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Adding a custom purple color for easy reference if needed outside of primary
+        // Brand colors: Purple primary + Gold & Cyan secondaries
         purple: {
           50: '#fdf4ff',
           100: '#fbe9ff',
@@ -63,6 +63,30 @@ module.exports = {
           800: '#840a85',
           900: '#6d076b',
           950: '#460144',
+        },
+        gold: {
+          50: '#FFFBF0',
+          100: '#FFF8E1',
+          200: '#FFECB3',
+          300: '#FFE082',
+          400: '#FFD54F',
+          500: '#FFCA28',
+          600: '#FFC107',
+          700: '#FFB300',
+          800: '#FFA000',
+          900: '#FF8F00',
+        },
+        cyan: {
+          50: '#E0F7FA',
+          100: '#B2EBF2',
+          200: '#80DEEA',
+          300: '#4DD0E1',
+          400: '#26C6DA',
+          500: '#00BCD4',
+          600: '#00ACC1',
+          700: '#0097A7',
+          800: '#00838F',
+          900: '#006064',
         },
       },
       borderRadius: {
@@ -110,6 +134,32 @@ module.exports = {
             transform: "translate(1px, -1px)",
           },
         },
+        // New animations for aethex-style effects
+        "glow-pulse": {
+          "0%, 100%": { opacity: "0.5" },
+          "50%": { opacity: "1" },
+        },
+        "card-glow": {
+          "0%": { boxShadow: "0 0 20px rgba(154, 71, 255, 0.3)" },
+          "50%": { boxShadow: "0 0 40px rgba(154, 71, 255, 0.6)" },
+          "100%": { boxShadow: "0 0 20px rgba(154, 71, 255, 0.3)" },
+        },
+        "float": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        "fade-in": {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        "slide-up": {
+          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "gradient-shift": {
+          "0%, 100%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -117,6 +167,12 @@ module.exports = {
         "spin-slow": "spin-slow 3s linear infinite",
         "background-pan": "background-pan 10s ease infinite",
         "text-glitch": "text-glitch 0.5s infinite alternate",
+        "glow-pulse": "glow-pulse 2s ease-in-out infinite",
+        "card-glow": "card-glow 3s ease-in-out infinite",
+        "float": "float 3s ease-in-out infinite",
+        "fade-in": "fade-in 0.6s ease-out",
+        "slide-up": "slide-up 0.6s ease-out",
+        "gradient-shift": "gradient-shift 8s ease infinite",
       },
     },
   },

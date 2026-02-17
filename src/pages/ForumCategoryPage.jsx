@@ -15,7 +15,7 @@ import React, { useState, useEffect } from 'react';
       const [loading, setLoading] = useState(true);
       const [error, setError] = useState(null);
 
-      const baseUrl = "https://www.mrpiglr.com";
+      const baseUrl = import.meta.env.VITE_APP_URL || "https://www.mrpiglr.com";
       const pageUrl = `${baseUrl}/forum/category/${categoryId}`;
       const pageImage = `${baseUrl}/og-forum-category.jpg`; // Generic image for forum category
       const pageDescription = category ? `Browse discussions and posts in the "${category.name}" category of the MrPiglr forum.` : "Browse discussions and posts in a forum category of the MrPiglr community forum.";

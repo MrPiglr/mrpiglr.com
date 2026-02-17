@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/customSupabaseClient';
-import { Loader2, Calendar, Clock, Twitch, Youtube, MapPin, Video, Radio } from 'lucide-react';
+import { Loader2, Calendar, Clock, Twitch, Youtube, MapPin, Video, Radio, ChevronRight, TrendingUp, Activity } from 'lucide-react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,16 +10,27 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { format, isFuture, isPast, formatDistanceToNow } from 'date-fns';
 import AnimatedPage from '@/components/AnimatedPage';
 import { useCountdown } from '@/hooks/useCountdown';
+import { useTheme } from '@/contexts/ThemeContext';
 import { generateBreadcrumbSchema } from '@/lib/jsonLdSchemas';
 
 // Countdown sub-component
 const CountdownTimer = ({ targetDate }) => {
   const { days, hours, minutes, seconds } = useCountdown(targetDate);
+  const { theme } = useTheme();
 
-  if (days + hours + minutes + seconds <= 0) return <span className="text-green-400 font-bold">Live Now!</span>;
+  if (days + hours + minutes + seconds <= 0) {
+    const liveColor = theme === 'cyberpunk' ? 'text-[#00FF00]' : theme === 'matrix' ? 'text-[#39FF14]' : 'text-green-400';
+    return <span className={`${liveColor} font-bold`}>Live Now!</span>;
+  }
+
+  const getCountdownClass = () => {
+    if (theme === 'cyberpunk') return 'text-[#FF006E] bg-[#FF006E]/10 border border-[#FF006E]/30';
+    if (theme === 'matrix') return 'text-[#00FF00] bg-[#00FF00]/10 border border-[#00FF00]/30';
+    return 'text-purple-300 bg-purple-900/30 border border-purple-500/20';
+  };
 
   return (
-    <div className="flex gap-2 text-xs md:text-sm font-mono text-purple-300 bg-purple-900/30 px-3 py-1.5 rounded-lg border border-purple-500/20">
+    <div className={`flex gap-2 text-xs md:text-sm font-mono ${getCountdownClass()} px-3 py-1.5 rounded-lg`}>
       <span className="font-bold">{days}d</span> :
       <span className="font-bold">{hours}h</span> :
       <span className="font-bold">{minutes}m</span> :
@@ -133,6 +144,7 @@ const EventsPage = () => {
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("upcoming");
+  const [stats, setStats] = useState({ total: 0, upcoming: 0, past: 0 });
 
   const baseUrl = "https://www.mrpiglr.com";
   const pageUrl = `${baseUrl}/events`;
@@ -145,36 +157,31 @@ const EventsPage = () => {
         const { data, error } = await supabase
           .from('mrpiglr_events')
           .select('*')
-          .order('start_time', { ascending: true }); // Ascending for upcoming feels more natural (soonest first)
+          .order('start_time', { ascending: true });
 
         if (error) throw error;
-        setEvents(data || []);
-      } catch (err) {
-        console.error('Failed to load events', err);
+
+        const now = new Date();
+        const upcoming = data.filter(e => new Date(e.start_time) > now);
+        const past = data.filter(e => new Date(e.start_time) <= now);
+
+        setEvents(data);
+        setStats({
+          total: data.length,
+          upcoming: upcoming.length,
+          past: past.length
+        });
+
+        // Filter based on active tab
+        setFilteredEvents(activeTab === "upcoming" ? upcoming : past);
+      } catch (error) {
+        console.error('Error fetching events:', error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchEvents();
-  }, []);
-
-  useEffect(() => {
-    const now = new Date();
-    let result = [];
-
-    if (activeTab === 'upcoming') {
-      result = events
-        .filter(e => new Date(e.start_time) >= now)
-        .sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
-    } else {
-      result = events
-        .filter(e => new Date(e.start_time) < now)
-        .sort((a, b) => new Date(b.start_time) - new Date(a.start_time)); // Past events desc
-    }
-    
-    setFilteredEvents(result);
-  }, [activeTab, events]);
+  }, [activeTab]);
 
   return (
     <AnimatedPage>
@@ -213,28 +220,133 @@ const EventsPage = () => {
       </Helmet>
 
       <div className="min-h-screen bg-black text-white pb-20">
-        <div className="relative py-24 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-900/30 via-black to-black">
-          <div className="container mx-auto px-4 text-center">
+        {/* Terminal Header */}
+        <div className="container mx-auto px-4 py-12">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h1 className="text-5xl md:text-6xl font-bold text-purple-300 font-mono mb-2">
+              SYSTEM.EVENTS()
+            </h1>
+            <p className="text-xl text-muted-foreground font-mono mb-2">
+              {'>'} Live streams, workshops, and community gatherings.
+            </p>
+          </motion.div>
+        </div>
+
+        {/* Stat Cards */}
+        <div className="container mx-auto px-4 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <motion.div
-              initial={{ opacity: 0, y: -20 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <h1 className="text-5xl md:text-7xl font-bold mb-4 tracking-tight">
-                <span className="text-white">LIVE_</span>
-                <span className="text-purple-500">EVENTS</span>
-              </h1>
-              <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-                Join the stream, participate in workshops, and hang out with the community.
-              </p>
+              <Card className="bg-gradient-to-br from-purple-500/10 to-transparent border-purple-500/30 hover:border-purple-500/50 transition-all">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground font-mono">Total Events</p>
+                      <p className="text-3xl font-bold text-purple-300">{stats.total}</p>
+                    </div>
+                    <Calendar className="text-purple-500/50 w-12 h-12" />
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <Card className="bg-gradient-to-br from-blue-500/10 to-transparent border-blue-500/30 hover:border-blue-500/50 transition-all">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground font-mono">Upcoming</p>
+                      <p className="text-3xl font-bold text-blue-300">{stats.upcoming}</p>
+                    </div>
+                    <TrendingUp className="text-blue-500/50 w-12 h-12" />
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <Card className="bg-gradient-to-br from-green-500/10 to-transparent border-green-500/30 hover:border-green-500/50 transition-all">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground font-mono">Past</p>
+                      <p className="text-3xl font-bold text-green-300">{stats.past}</p>
+                    </div>
+                    <Activity className="text-green-500/50 w-12 h-12" />
+                  </div>
+                </CardContent>
+              </Card>
             </motion.div>
           </div>
         </div>
 
         <div className="container mx-auto px-4 md:px-8 relative z-10">
+          {/* Featured Event */}
+          {!loading && filteredEvents.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="mb-12"
+            >
+              <h2 className="text-2xl font-mono font-bold mb-4 text-blue-300">{'›'} Featured</h2>
+              <Card className="overflow-hidden border-2 border-blue-500/50 grid md:grid-cols-2 shadow-lg">
+                {filteredEvents[0].image_url && (
+                  <div className="h-80 md:h-full overflow-hidden">
+                    <img src={filteredEvents[0].image_url} alt={filteredEvents[0].title} className="w-full h-full object-cover" />
+                  </div>
+                )}
+                <div className="p-8 flex flex-col justify-center">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Badge className="bg-blue-600 text-white">FEATURED</Badge>
+                    <CountdownTimer targetDate={new Date(filteredEvents[0].start_time)} />
+                  </div>
+                  <h3 className="text-3xl font-bold mb-2">{filteredEvents[0].title}</h3>
+                  <div className="space-y-2 mb-4 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4" />
+                      {format(new Date(filteredEvents[0].start_time), 'PPP p')}
+                    </div>
+                    {filteredEvents[0].event_type && (
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="bg-black/60 text-white">{filteredEvents[0].event_type}</Badge>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-muted-foreground mb-6 line-clamp-3">{filteredEvents[0].description}</p>
+                  {filteredEvents[0].stream_url && (
+                    <Button className="bg-blue-600 hover:bg-blue-700 w-fit" asChild>
+                      <a href={filteredEvents[0].stream_url} target="_blank" rel="noopener noreferrer">
+                        Join Now
+                        <ChevronRight className="ml-2 w-4 h-4" />
+                      </a>
+                    </Button>
+                  )}
+                </div>
+              </Card>
+            </motion.div>
+          )}
+
+          {/* Tabs & Grid */}
           <Tabs defaultValue="upcoming" className="w-full mb-12" onValueChange={setActiveTab}>
-            <div className="flex justify-center mb-8">
-              <TabsList className="bg-gray-900 border border-gray-800 p-1 rounded-full">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-2xl font-mono font-bold text-purple-300">{'›'} {activeTab === 'upcoming' ? 'Upcoming' : 'Archive'}</h2>
+              <TabsList className="bg-muted/50 border border-purple-500/30 p-1 rounded-full backdrop-blur-sm">
                 <TabsTrigger value="upcoming" className="rounded-full px-6 data-[state=active]:bg-purple-600 data-[state=active]:text-white">
                   Upcoming
                 </TabsTrigger>
@@ -249,11 +361,11 @@ const EventsPage = () => {
                  <div className="flex justify-center py-20"><Loader2 className="w-10 h-10 animate-spin text-purple-500" /></div>
                ) : filteredEvents.length > 0 ? (
                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                   {filteredEvents.map(event => <EventCard key={event.id} event={event} />)}
+                   {filteredEvents.slice(0, 6).map(event => <EventCard key={event.id} event={event} />)}
                  </div>
                ) : (
-                 <div className="text-center py-20 bg-gray-900/50 rounded-xl border border-dashed border-gray-800">
-                   <p className="text-gray-500">No upcoming events scheduled. Check back soon!</p>
+                 <div className="text-center py-20 bg-muted/30 rounded-xl border border-dashed border-muted">
+                   <p className="text-muted-foreground">No upcoming events. Check back soon!</p>
                  </div>
                )}
             </TabsContent>

@@ -21,7 +21,7 @@ import React, { useState, useEffect } from 'react';
       const [newComment, setNewComment] = useState('');
       const [isSubmitting, setIsSubmitting] = useState(false);
 
-      const baseUrl = "https://www.mrpiglr.com";
+      const baseUrl = import.meta.env.VITE_APP_URL || "https://www.mrpiglr.com";
       const pageUrl = `${baseUrl}/forum/post/${postId}`;
       const pageImage = `${baseUrl}/og-forum-post.jpg`; // Generic image for forum post
       const pageDescription = post ? `${post.title}: ${post.content?.substring(0, 150)}...` : "Read and participate in a discussion on the MrPiglr community forum.";

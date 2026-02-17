@@ -48,6 +48,11 @@ const BrowseAllPage = lazy(() => import('@/pages/BrowseAllPage'));
 const AdminPanelPage = lazy(() => import('@/pages/AdminPanelPage'));
 const StorePage = lazy(() => import('@/pages/StorePage'));
 const ProductDetailPage = lazy(() => import('@/pages/ProductDetailPage'));
+const ForumPage = lazy(() => import('@/pages/ForumPage'));
+const ForumCategoryPage = lazy(() => import('@/pages/ForumCategoryPage'));
+const ForumPostPage = lazy(() => import('@/pages/ForumPostPage'));
+const FanArtPage = lazy(() => import('@/pages/FanArtPage'));
+const InspirationsPage = lazy(() => import('@/pages/InspirationsPage'));
 
 const LoadingFallback = () => (
   <div className="flex justify-center items-center h-screen bg-black">
@@ -157,6 +162,11 @@ function App() {
               {/* Community Routes */}
               <Route path="profile/:username" element={<ProfilePage />} />
               <Route path="members" element={<MembersPage />} />
+              <Route path="forum" element={<ForumPage />} />
+              <Route path="forum/category/:categoryId" element={<ForumCategoryPage />} />
+              <Route path="forum/post/:postId" element={<ForumPostPage />} />
+              <Route path="fan-art" element={<FanArtPage />} />
+              <Route path="inspirations" element={<InspirationsPage />} />
               
               {/* Events Route */}
               <Route path="events" element={<EventsPage />} />

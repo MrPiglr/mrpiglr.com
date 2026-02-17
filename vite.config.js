@@ -246,6 +246,20 @@ export default defineConfig({
 			'Cross-Origin-Embedder-Policy': 'credentialless',
 		},
 		allowedHosts: true,
+		middlewareMode: false,
+		hmr: (() => {
+			// Codespaces environment
+			if (process.env.CODESPACE_NAME && process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN) {
+				console.log('🔌 Using Codespaces HMR config');
+				return {
+					protocol: 'wss',
+					host: `${process.env.CODESPACE_NAME}-3000.${process.env.GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}`,
+				};
+			}
+			// Local development - auto-detect
+			console.log('🔌 Using auto-detect HMR config');
+			return true;
+		})(),
 	},
 	resolve: {
 		extensions: ['.jsx', '.js', '.tsx', '.ts', '.json', ],
